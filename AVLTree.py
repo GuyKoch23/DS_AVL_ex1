@@ -207,6 +207,8 @@ class AVLTree(object):
 
 	# Creaets a node with the given key and val and inserts as usual BST
 	def insert_node_bst(self, key, val):
+		#CR: Consider changing veriable names to have a meanining instead if the
+		#    names from class.
 		y = None
 		x = self.root
 		z_left = AVLNode(None, None)
@@ -217,16 +219,20 @@ class AVLTree(object):
 		z.set_left(z_left)  # virtual node
 		z.set_right(z_right)  # virtual node
 
+		# CR: Why do you need the 2 stopping criteria?
 		while x != None and x.get_key() != None:
 			y = x
 			# Fixing the size of the nodes on the way down
 			y.set_size(y.get_size() + 1)
+			# Consider adding an assert here if x.get_key()==z.get_key()
 			if z.get_key() < x.get_key():
 				x = x.get_left()
 			else:
 				x = x.get_right()
 		z.set_parent(y)
 		# the tree was empty
+		# CR: Consider checking if the tree is empty before the while loop
+		#     and returning there. It will simplify your code in a few places in this function!
 		if y == None:
 			self.root = z
 			return z
@@ -241,6 +247,8 @@ class AVLTree(object):
 		# id the new node has a brother then it doesn't change heights.
 		if not (z.get_parent().get_left().is_real_node() and z.get_parent().get_right().is_real_node()):
 			node = z.get_parent()
+			# CR: 1. tmpHeight is a bad name. 2. I would change the following line to tmpHeight=-1
+			#     for clarity.
 			tmpHeight = node.get_height()
 			while node != None:
 				if node.get_height() >= tmpHeight + 1:
@@ -425,6 +433,10 @@ class AVLTree(object):
 			self.inorder_rec(node.get_right(), avl_list)
 
 	def select_rec(self, node, i):
+		# CR: I think there is a bug here if the tree is of size 1.
+		# CR: Consider adding function for get_left_size and get_right_size that are safer (check for Nones)
+		#     and use them all over. It will simplify some of your code in other parts and eliminate the bug
+		#     here.
 		r = node.get_left().get_size() + 1
 		if i == r:
 			return node
@@ -455,14 +467,20 @@ class AVLTree(object):
 		total_ops = 0
 		while y != None:
 			bf = self.calculate_BF(y)
+			# CR: The way you used is_height_changed() works (I think), but is super complex.
+			#     A more stright forward way to implement this would have been to use recusrion
+			#     and then update while going back up to tree when returning from functions.
+			#     If this works you do not have to change it, but you made your life way harder.
 			if abs(bf) < 2 and not self.is_height_changed(y, x.key):
 				return 0
 			elif abs(bf) < 2 and self.is_height_changed(y, x.key):
 				y = y.get_parent()
 				x = x.get_parent()
 			else:
+				# CR: Again here. The recursive approach would give you the "crimnal_son" effortlessly.
 				criminal_son_bf = self.calculate_BF(y.get_left()) if bf == 2 else self.calculate_BF(y.get_right())
 				total_ops = self.rotate(y, bf, criminal_son_bf)
+				# CR: return here without the total_ops + changing the last line to "return 0" is clearer.
 				break
 		return total_ops
 
@@ -486,6 +504,8 @@ class AVLTree(object):
 				y = y.get_parent()
 			else:
 				criminal_son_bf = self.calculate_BF(y.get_left() if bf == 2 else self.calculate_BF(y.get_right))
+				# CR: Complexity problem here! Your complexity is log2(n) because your rotate takes O(logn)
+				#     instead of O(1) and you can have O(logn) rotations in delete.
 				total_ops += self.rotate(y, bf, criminal_son_bf)
 				y = y.get_parent()
 		return total_ops
@@ -498,6 +518,7 @@ class AVLTree(object):
 
 	def avl_to_array(self):
 		avl_list = []
+		# CR: more elegant to return the list instead of editing it, but no big deal.
 		self.inorder_rec(self.root, avl_list)
 		return avl_list
 
@@ -508,6 +529,7 @@ class AVLTree(object):
 	"""
 
 	def size(self):
+		# CR: Exception for empty tree.
 		return self.get_root().get_size()
 
 	"""splits the dictionary at a given node
