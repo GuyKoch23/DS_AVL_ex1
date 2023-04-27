@@ -4,8 +4,6 @@
 #id2      - 318962909
 #name2    - guy koch  
 
-import math
-
 """A class represnting a node in an AVL tree"""
 
 class AVLNode(object):
@@ -192,14 +190,14 @@ class AVLTree(object):
 	@returns: the value corresponding to key.
 	"""
 	def search(self, key):
-		node = self.root
-		while(node != None):
-			if node.key == key:
+		node = self.get_root()
+		while(node != None and node.is_real_node()):
+			if node.get_key() == key:
 				return node
-			elif node.key > key:
-				node = node.left
+			elif node.get_key() > key:
+				node = node.get_left()
 			else:
-				node = node.right
+				node = node.get_right()
 		return None
 
 	##################################################################################
@@ -217,57 +215,57 @@ class AVLTree(object):
 		z.set_left(z_left) # virtual node
 		z.set_right(z_right) # virtual node
 
-		while x != None and x.key != None:
+		while x != None and x.get_key() != None:
 			y = x
 			# Fixing the size of the nodes on the way down
-			y.size += 1
-			if z.key < x.key:
-				x = x.left
+			y.set_size(y.get_size() +1)
+			if z.get_key() < x.get_key():
+				x = x.get_left()
 			else:
-				x = x.right
-		z.parent = y
+				x = x.get_right()
+		z.set_parent(y)
 		# the tree was empty
 		if y == None:
 			self.root = z
 			return z
 		else:
-			if z.key < y.key:
-				y.left = z
+			if z.get_key() < y.get_key():
+				y.set_left(z)
 			else:
-				y.right = z
+				y.set_right(z)
 		
 		# fixing the height of the relevant nodes going up again
 		# need to fix height only when the parant way a leaf and not it is a not
-		if not(z.parent.left.is_real_node() and  z.parent.right.is_real_node()): 
-			node = z.parent
-			tmpHeight = node.height
+		if not(z.get_parent().get_left().is_real_node() and  z.get_parent().get_right().is_real_node()): 
+			node = z.get_parent()
+			tmpHeight = node.get_height()
 			while node != None:
-				if node.height >= tmpHeight + 1:
+				if node.get_height() >= tmpHeight + 1:
 					return z
-				node.height += 1
-				tmpHeight = node.height
-				node = node.parent
+				node.set_height(node.get_height() + 1) 
+				tmpHeight = node.get_height()
+				node = node.get_parent()
 				
 		return z
 		
 	# returns the BF of a given node in the AVLTree		
 	def calculate_BF(self, node):
-		if node.left.key == None and node.right.key == None:
+		if node.get_left().get_key() == None and node.get_right().get_key() == None:
 			return 0
-		elif node.left.key == None:
-			return ((1 + node.right.get_height()) * (-1))
+		elif node.get_left().get_key() == None:
+			return ((1 + node.get_right().get_height()) * (-1))
 		elif node.right.key == None:
-			return node.left.get_height() + 1 
+			return node.get_left().get_height() + 1 
 		else:
-			return node.left.height - node.right.height
+			return node.get_left().get_height() - node.get_right().get_height()
 	
 
 	# called after insertion and before a rotation, deretmines if the height of a given node has changed
 	def is_height_changed(self, node, son_val):
-		if node.key < son_val: # came from right
-			return node.right.height >= 1 + node.left.height
+		if node.get_key() < son_val: # came from right
+			return node.get_right().get_height() >= 1 + node.get_left().get_height()
 		else: # came from left
-			return node.left.height >= 1 + node.right.height
+			return node.get_left().get_height() >= 1 + node.get_right().get_height()
 
 	def rotate(self, criminal_node, criminal_node_bf, criminal_son_bf):
 		if criminal_node_bf == 2:
@@ -284,59 +282,58 @@ class AVLTree(object):
 				self.left_rotation(criminal_node)
 
 	def right_rotation(self, node):
-		y = node.left # 7
-		if node.parent != None:
-			if node.parent.key > node.key: # node is left son to parent
-				node.parent.left = y
+		y = node.get_left()
+		if node.get_parent() != None:
+			if node.get_parent().get_key() > node.get_key(): # node is left son to parent
+				node.get_parent.set_left(y)
 			else:
-				node.parent.right = y
-			y.parent = node.parent
+				node.get_parent.set_right(y)
+			y.set_parent(node.get_parent())
 		else:
 			self.root = y
-			y.parent = None
-		t = y.right # t is 7 right son
-		y.right = node # 7.right = 8
-		node.parent = y # 8.parent = 7
-		node.left = t # 8.left = 7.right
-		t.parent = node # 7.right.parent = t = 8
+			y.set_parent(None)
+		t = y.get_right()
+		y.set_right(node)
+		node.set_parent(y)
+		node.set_left(t)
+		t.set_parent(node)
 
-		node.set_size(1 + node.left.size + node.right.size)
-		y.set_size(1 + y.left.size + y.right.size)
+		node.set_size(1 + node.get_left().get_size() + node.get_right().get_size())
+		y.set_size(1 + y.get_left().get_size() + y.get_right().get_size())
 
 		node.set_height(1 + max(node.left.get_height(), node.right.get_height()))
 		#y.set_height(1 + max(y.left.get_height(), y.right.get_height()))
 
 		while y != None:
 			y.set_height(1 + max(y.left.get_height(), y.right.get_height()))
-			y = y.parent
+			y = y.get_parent()
 
 
 	def left_rotation(self, node):
-		y = node.right # 7
-		if node.parent != None:
-			if node.parent.key > node.key: # node is left son to parent
-				node.parent.left = y
+		y = node.get_right() # 7
+		if node.get_parent() != None:
+			if node.get_parent().get_key() > node.get_key(): # node is left son to parent
+				node.get_parent().set_left(y)
 			else:
-				node.parent.right = y
-			y.parent = node.parent
+				node.get_parent.set_right(y)
+			y.set_parent(node.get_parent())
 		else:
 			self.root = y
-			y.parent = None
-		t = y.left # t is 7 left son
-		y.left = node # 7.left = 8
-		node.parent = y # 6.parent = 7
-		node.right = t # 6.right = 7.left
-		t.parent = node # 7.right.parent = t = 8
+			y.set_parent(None)
+		t = y.get_left()
+		y.set_left(node)
+		node.set_parent(y)
+		node.set_right(t)
+		t.set_parent(node)
 
-		node.set_size(1 + node.left.size + node.right.size)
-		y.set_size(1 + y.left.size + y.right.size)
+		node.set_size(1 + node.get_left().get_size() + node.get_right().get_size())
+		y.set_size(1 + y.get_left().get_size() + y.get_right().get_size())
 
 		node.set_height(1 + max(node.left.get_height(), node.right.get_height()))
-		#y.set_height(1 + max(y.left.get_height(), y.right.get_height()))
 
 		while y != None:
 			y.set_height(1 + max(y.left.get_height(), y.right.get_height()))
-			y = y.parent
+			y = y.get_parent()
 
 
 	##################################################################################
@@ -356,16 +353,16 @@ class AVLTree(object):
 	def insert(self, key, val):
 		created_node = self.insert_node_bst(key, val)
 		x = created_node
-		y = created_node.parent
+		y = created_node.get_parent()
 		while y != None:
 			bf = self.calculate_BF(y)
 			if abs(bf) < 2 and not self.is_height_changed(y, x.key):
 				break
 			elif abs(bf) < 2 and self.is_height_changed(y, x.key):
-				y = y.parent
-				x = x.parent
+				y = y.get_parent()
+				x = x.get_parent()
 			else:
-				criminal_son_bf = self.calculate_BF(y.left) if bf == 2 else self.calculate_BF(y.right)
+				criminal_son_bf = self.calculate_BF(y.get_left()) if bf == 2 else self.calculate_BF(y.get_right())
 				self.rotate(y, bf, criminal_son_bf)
 				break
 		return -1
@@ -460,4 +457,4 @@ class AVLTree(object):
 	@returns: the root, None if the dictionary is empty
 	"""
 	def get_root(self):
-		return None
+		return self.root
