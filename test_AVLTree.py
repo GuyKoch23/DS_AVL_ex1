@@ -245,6 +245,12 @@ def test_delete_24_in_bt():
     assert (tree.get_root().get_key() == 11)
     assert (number_of_rotations_performed == 3)
 
+def test_avl_to_list_bt():
+    tree = build_tree([15, 8, 22, 4, 11, 20, 24, 2, 9, 12, 18, 13])
+    avl_list = tree.avl_to_array()
+    # Keys of the tree
+    print(avl_list)
+    assert (avl_list == [(2,2), (4,4), (8,8), (9,9), (11,11), (12,12), (13,13), (15,15), (18,18), (20,20), (22,22), (24,24)] )
 
 #############################################################################
 
