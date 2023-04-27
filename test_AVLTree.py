@@ -260,7 +260,12 @@ def test_rank():
     assert(tree.rank(tree.get_root()) == 8)
     assert(tree.rank(tree.get_root().get_left().get_right()) == 5)
 
-
+def test_select():
+    tree = build_tree([15, 8, 22, 4, 11, 20, 24, 2, 9, 12, 18, 13])
+    assert(tree.select(6).get_key() == 12)
+    assert(tree.select(10).get_key() == 20)
+    assert(tree.select(1).get_key() == 2)
+    assert(tree.select(12).get_key() == 24)
 
 #############################################################################
 

@@ -423,6 +423,15 @@ class AVLTree(object):
 			self.inorder_rec(node.get_left(), avl_list)
 			avl_list.append((node.get_key(), node.get_value()))
 			self.inorder_rec(node.get_right(), avl_list)
+
+	def select_rec(self, node, i):
+		r = node.get_left().get_size() + 1
+		if i == r:
+			return node
+		elif i < r:
+			return self.select_rec(node.get_left(), i)
+		else:
+			return self.select_rec(node.get_right(), i-r)
 			
 
 	##################################################################################
@@ -560,7 +569,8 @@ class AVLTree(object):
 	"""
 
 	def select(self, i):
-		return None
+		x = self.get_root()
+		return self.select_rec(x, i)
 
 	"""returns the root of the tree representing the dictionary
 
