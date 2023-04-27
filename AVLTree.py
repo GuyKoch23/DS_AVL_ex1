@@ -542,7 +542,13 @@ class AVLTree(object):
 	"""
 
 	def rank(self, node):
-		return None
+		r = node.get_left().get_size() + 1
+		y = node
+		while y:
+			if y.get_parent() and y == y.get_parent().get_right():
+				r += y.get_parent().get_left().get_size() + 1
+			y = y.get_parent()
+		return r
 
 	"""finds the i'th smallest item (according to keys) in self
 
