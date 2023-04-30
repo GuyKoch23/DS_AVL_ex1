@@ -16,7 +16,7 @@ def print_inorder(node):
 def build_tree(tree_keys_list):
     tree = AVLTree()
     for key in tree_keys_list:
-        tree.insert_node_bst(key, key)
+        tree.insert(key, key)
     return tree
 
 
@@ -54,68 +54,68 @@ def visual_trees():
 ####################################### Testers ##############################
 
 ### Test Build method ###
-def test_build_876():
-    tree = build_tree([8, 7, 6])
-    # Keys of the tree
-    assert (tree.get_root().get_key() == 8)
-    assert (tree.get_root().get_left().get_key() == 7)
-    assert (tree.get_root().get_left().get_left().get_key() == 6)
-    # Sizes of the tree
-    assert (tree.get_root().get_size() == 3)
-    assert (tree.get_root().get_left().get_size() == 2)
-    assert (tree.get_root().get_left().get_left().get_size() == 1)
-    # Heights of the tree
-    assert (tree.get_root().get_height() == 2)
-    assert (tree.get_root().get_left().get_height() == 1)
-    assert (tree.get_root().get_left().get_left().get_height() == 0)
+# def test_build_876():
+#     tree = build_tree([8, 7, 6])
+#     # Keys of the tree
+#     assert (tree.get_root().get_key() == 8)
+#     assert (tree.get_root().get_left().get_key() == 7)
+#     assert (tree.get_root().get_left().get_left().get_key() == 6)
+#     # Sizes of the tree
+#     assert (tree.get_root().get_size() == 3)
+#     assert (tree.get_root().get_left().get_size() == 2)
+#     assert (tree.get_root().get_left().get_left().get_size() == 1)
+#     # Heights of the tree
+#     assert (tree.get_root().get_height() == 2)
+#     assert (tree.get_root().get_left().get_height() == 1)
+#     assert (tree.get_root().get_left().get_left().get_height() == 0)
 
 
-def test_build_678():
-    tree = build_tree([6, 7, 8])
-    # Keys of the tree
-    assert (tree.get_root().get_key() == 6)
-    assert (tree.get_root().get_right().get_key() == 7)
-    assert (tree.get_root().get_right().get_right().get_key() == 8)
-    # Sizes of the tree
-    assert (tree.get_root().get_size() == 3)
-    assert (tree.get_root().get_right().get_size() == 2)
-    assert (tree.get_root().get_right().get_right().get_size() == 1)
-    # Heights of the tree
-    assert (tree.get_root().get_height() == 2)
-    assert (tree.get_root().get_right().get_height() == 1)
-    assert (tree.get_root().get_right().get_right().get_height() == 0)
+# def test_build_678():
+#     tree = build_tree([6, 7, 8])
+#     # Keys of the tree
+#     assert (tree.get_root().get_key() == 6)
+#     assert (tree.get_root().get_right().get_key() == 7)
+#     assert (tree.get_root().get_right().get_right().get_key() == 8)
+#     # Sizes of the tree
+#     assert (tree.get_root().get_size() == 3)
+#     assert (tree.get_root().get_right().get_size() == 2)
+#     assert (tree.get_root().get_right().get_right().get_size() == 1)
+#     # Heights of the tree
+#     assert (tree.get_root().get_height() == 2)
+#     assert (tree.get_root().get_right().get_height() == 1)
+#     assert (tree.get_root().get_right().get_right().get_height() == 0)
 
 
-def test_build_786():
-    tree = build_tree([7, 8, 6])
-    # Keys of the tree
-    assert (tree.get_root().get_key() == 7)
-    assert (tree.get_root().get_left().get_key() == 6)
-    assert (tree.get_root().get_right().get_key() == 8)
-    # Sizes of the tree
-    assert (tree.get_root().get_size() == 3)
-    assert (tree.get_root().get_left().get_size() == 1)
-    assert (tree.get_root().get_right().get_size() == 1)
-    # Heights of the tree
-    assert (tree.get_root().get_height() == 1)
-    assert (tree.get_root().get_left().get_height() == 0)
-    assert (tree.get_root().get_right().get_height() == 0)
+# def test_build_786():
+#     tree = build_tree([7, 8, 6])
+#     # Keys of the tree
+#     assert (tree.get_root().get_key() == 7)
+#     assert (tree.get_root().get_left().get_key() == 6)
+#     assert (tree.get_root().get_right().get_key() == 8)
+#     # Sizes of the tree
+#     assert (tree.get_root().get_size() == 3)
+#     assert (tree.get_root().get_left().get_size() == 1)
+#     assert (tree.get_root().get_right().get_size() == 1)
+#     # Heights of the tree
+#     assert (tree.get_root().get_height() == 1)
+#     assert (tree.get_root().get_left().get_height() == 0)
+#     assert (tree.get_root().get_right().get_height() == 0)
 
 
-def test_build_768():
-    tree = build_tree([7, 6, 8])
-    # Keys of the tree
-    assert (tree.get_root().get_key() == 7)
-    assert (tree.get_root().get_left().get_key() == 6)
-    assert (tree.get_root().get_right().get_key() == 8)
-    # Sizes of the tree
-    assert (tree.get_root().get_size() == 3)
-    assert (tree.get_root().get_left().get_size() == 1)
-    assert (tree.get_root().get_right().get_size() == 1)
-    # Heights of the tree
-    assert (tree.get_root().get_height() == 1)
-    assert (tree.get_root().get_left().get_height() == 0)
-    assert (tree.get_root().get_right().get_height() == 0)
+# def test_build_768():
+#     tree = build_tree([7, 6, 8])
+#     # Keys of the tree
+#     assert (tree.get_root().get_key() == 7)
+#     assert (tree.get_root().get_left().get_key() == 6)
+#     assert (tree.get_root().get_right().get_key() == 8)
+#     # Sizes of the tree
+#     assert (tree.get_root().get_size() == 3)
+#     assert (tree.get_root().get_left().get_size() == 1)
+#     assert (tree.get_root().get_right().get_size() == 1)
+#     # Heights of the tree
+#     assert (tree.get_root().get_height() == 1)
+#     assert (tree.get_root().get_left().get_height() == 0)
+#     assert (tree.get_root().get_right().get_height() == 0)
 
 
 ### Test Search method ###
@@ -182,59 +182,65 @@ def test_insert_8_to_67():
     assert (tree.get_root().get_left().get_height() == 0)
     assert (tree.get_root().get_right().get_height() == 0)
 
+def test_insert_8_to_5497():
+    tree = build_tree([5,4,9,7])
+    tree.insert(8, 8)
+    assert (tree.get_root().get_height() == 2)
+
+
 # Test delete method
 
-def test_delete_bst_8_from_678():
-    tree = build_tree([6, 7, 8])
-    tree.delete_node_bst(tree.get_root().get_right().get_right())
-    # Keys of the tree
-    assert (tree.get_root().get_key() == 6)
-    assert (tree.get_root().get_right().get_key() == 7)
-    assert (tree.get_root().get_right().get_right().get_key() is None)
-    # Sizes of the tree
-    assert (tree.get_root().get_size() == 2)
-    assert (tree.get_root().get_right().get_size() == 1)
-    assert (tree.get_root().get_right().get_right().get_size() == 0)
-    # Heights of the tree
-    assert (tree.get_root().get_height() == 1)
-    assert (tree.get_root().get_right().get_height() == 0)
-    assert (tree.get_root().get_right().get_right().get_height() == -1)
+# def test_delete_bst_8_from_678():
+#     tree = build_tree([6, 7, 8])
+#     tree.delete_node_bst(tree.get_root().get_right().get_right())
+#     # Keys of the tree
+#     assert (tree.get_root().get_key() == 6)
+#     assert (tree.get_root().get_right().get_key() == 7)
+#     assert (tree.get_root().get_right().get_right().get_key() is None)
+#     # Sizes of the tree
+#     assert (tree.get_root().get_size() == 2)
+#     assert (tree.get_root().get_right().get_size() == 1)
+#     assert (tree.get_root().get_right().get_right().get_size() == 0)
+#     # Heights of the tree
+#     assert (tree.get_root().get_height() == 1)
+#     assert (tree.get_root().get_right().get_height() == 0)
+#     assert (tree.get_root().get_right().get_right().get_height() == -1)
 
 
-def test_delete_bst_6_from_5346():
-    tree = build_tree([5, 3, 4, 6])
-    tree.delete_node_bst(tree.get_root().get_right())
-    # Keys of the tree
-    assert (tree.get_root().get_right().get_key() is None)
-    assert (tree.get_root().get_key() == 5)
-    assert (tree.get_root().get_left().get_key() == 3)
-    assert (tree.get_root().get_size() == 3)
-    assert (tree.get_root().get_height() == 2)
+# def test_delete_bst_6_from_5346():
+#     tree = build_tree([5, 3, 4, 6])
+#     tree.delete_node_bst(tree.get_root().get_right())
+#     # Keys of the tree
+#     assert (tree.get_root().get_right().get_key() is None)
+#     assert (tree.get_root().get_key() == 5)
+#     assert (tree.get_root().get_left().get_key() == 3)
+#     assert (tree.get_root().get_size() == 3)
+#     assert (tree.get_root().get_height() == 2)
 
 
-def test_delete_bst_4_from_5346():
-    tree = build_tree([5, 3, 4, 6])
-    tree.delete_node_bst(tree.get_root().get_left().get_right())
-    # Keys of the tree
-    assert (tree.get_root().get_left().get_right().get_key() is None)
-    assert (tree.get_root().get_left().get_height() == 0)
-    assert (tree.get_root().get_height() == 1)
+# def test_delete_bst_4_from_5346():
+#     tree = build_tree([5, 3, 4, 6])
+#     tree.delete_node_bst(tree.get_root().get_left().get_right())
+#     # Keys of the tree
+#     assert (tree.get_root().get_left().get_right().get_key() is None)
+#     assert (tree.get_root().get_left().get_height() == 0)
+#     assert (tree.get_root().get_height() == 1)
 
 
-def test_delete_bst_7_from_54768():
-    tree = build_tree([5, 4, 7, 6, 8])
-    tree.delete_node_bst(tree.get_root().get_right())
-    # Keys of the tree
-    assert (tree.get_root().get_size() == 4)
-    assert (tree.get_root().get_height() == 2)
+# def test_delete_bst_7_from_54768():
+#     tree = build_tree([5, 4, 7, 6, 8])
+#     tree.delete_node_bst(tree.get_root().get_right())
+#     # Keys of the tree
+#     assert (tree.get_root().get_size() == 4)
+#     assert (tree.get_root().get_height() == 2)
 
 
-def test_height_changed_deleting_8_in_5346():
-    tree = build_tree([5, 3, 4, 6])
-    to_delete_node = tree.get_root().get_left().get_right()
-    tree.delete_node_bst(to_delete_node)
-    # Keys of the tree
-    assert (tree.is_height_changed_after_delete(tree.get_root(), to_delete_node))
+# def test_height_changed_deleting_8_in_5346():
+#     tree = build_tree([5, 3, 4, 6])
+#     to_delete_node = tree.get_root().get_left().get_right()
+#     tree.delete_node_bst(to_delete_node)
+#     # Keys of the tree
+#     assert (tree.is_height_changed_after_delete(tree.get_root(), to_delete_node))
 
 
 def test_delete_24_in_bt():
@@ -245,13 +251,37 @@ def test_delete_24_in_bt():
     assert (tree.get_root().get_height() == 3)
     assert (tree.get_root().get_key() == 11)
     assert (number_of_rotations_performed == 3)
+
+def test_delete_9_in_5437689():
+    tree = build_tree([5,4,7,3,6,8,9])
+    to_delete_node = tree.get_root().get_right().get_right().get_right()
+    number_of_rotations_performed = tree.delete(to_delete_node)
+    # Keys of the tree
+    assert (tree.get_root().get_height() == 2)
+    assert (tree.get_root().get_right().get_height() == 1)
+    assert (tree.get_root().get_right().get_right().get_height() == 0)
+    assert (tree.get_root().get_key() == 5)
+    assert (number_of_rotations_performed == 0)
+
+def test_delete_6_in_5437689():
+    tree = build_tree([5,4,7,3,6,8,9])
+    to_delete_node = tree.get_root().get_right().get_left()
+    number_of_rotations_performed = tree.delete(to_delete_node)
+    # Keys of the tree
+    assert (tree.get_root().get_height() == 2)
+    assert (tree.get_root().get_right().get_left().get_height() == 0)
+    assert (tree.get_root().get_right().get_height() == 1)
+    assert (tree.get_root().get_right().get_right().get_height() == 0)
+    assert (tree.get_root().get_key() == 5)
+    assert (number_of_rotations_performed == 1)
+
+
 # Test avl_to_list ###
 
 def test_avl_to_list_bt():
     tree = build_tree([15, 8, 22, 4, 11, 20, 24, 2, 9, 12, 18, 13])
     avl_list = tree.avl_to_array()
     # Keys of the tree
-    print(avl_list)
     assert (avl_list == [(2,2), (4,4), (8,8), (9,9), (11,11), (12,12), (13,13), (15,15), (18,18), (20,20), (22,22), (24,24)] )
 
 def test_rank():
@@ -266,6 +296,10 @@ def test_select():
     assert(tree.select(10).get_key() == 20)
     assert(tree.select(1).get_key() == 2)
     assert(tree.select(12).get_key() == 24)
+
+def test_select_tree_size1():
+    tree = build_tree([15])
+    assert(tree.select(1).get_key() == 15)
 
 #############################################################################
 
