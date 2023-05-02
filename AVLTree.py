@@ -323,7 +323,10 @@ class AVLTree(object):
 		node.set_size(1 + node.get_left().get_size() + node.get_right().get_size())
 		node.set_height(1 + max(node.left.get_height(), node.right.get_height()))
 
-	def rotate(self, criminal_node, criminal_node_bf, criminal_son_bf):
+	def rotate(self, criminal_node, criminal_node_bf):
+
+		criminal_son_bf = self.calculate_BF(criminal_node.get_left()) if criminal_node_bf == 2 else self.calculate_BF(criminal_node.get_right())
+
 		if criminal_node_bf == 2:
 			if criminal_son_bf == 1 or criminal_son_bf == 0:  # right rotation
 				self.right_rotation(criminal_node)
@@ -395,7 +398,67 @@ class AVLTree(object):
 			return self.select_rec(node.get_left(), i)
 		else:
 			return self.select_rec(node.get_right(), i-r)
-			
+
+
+	def join_to_left(self, tree, key, val):
+		connector = AVLNode(key, val)
+		connector_left = AVLNode(None, None)
+		connector_right = AVLNode(None, None)
+		connector = AVLNode(key, val)
+		connector.set_height(0)
+		connector.set_size(1)
+		connector.set_left(connector_left)  # virtual node
+		connector.set_right(connector_right)  # virtual node
+		node = self.get_root()
+		while(node.get_height() > tree.get_root().get_height()):
+			node = node.get_left()
+		parent = node.get_parent()
+		connector.set_right(node)
+		connector.set_left(tree.get_root())
+		node.set_parent(connector)
+		tree.get_root().set_parent(connector)
+		connector.set_parent(parent)
+		parent.set_left(connector)
+		self.update(connector)
+
+		# Rotating to balanced AVL tree
+		node = connector
+		while node != None:
+			bf = self.calculate_BF(node)
+			if abs(bf) >= 2:
+				self.rotate(node, bf)
+			node = node.get_parent()
+		
+	
+	def join_to_right(self, tree, key, val):
+		connector = AVLNode(key, val)
+		connector_left = AVLNode(None, None)
+		connector_right = AVLNode(None, None)
+		connector = AVLNode(key, val)
+		connector.set_height(0)
+		connector.set_size(1)
+		connector.set_left(connector_left)  # virtual node
+		connector.set_right(connector_right)  # virtual node
+		node = self.get_root()
+		while(node.get_height() > tree.get_root().get_height()):
+			node = node.get_right()
+		parent = node.get_parent()
+		connector.set_right(tree.get_root())
+		connector.set_left(node)
+		tree.get_root().set_parent(connector)
+		node.set_parent(connector)
+		connector.set_parent(parent)
+		parent.set_right(connector)
+		self.update(connector)
+
+		# Rotating to balanced AVL tree
+		node = connector
+		while node != None:
+			bf = self.calculate_BF(node)
+			if abs(bf) >= 2:
+				self.rotate(node, bf)
+			node = node.get_parent()
+
 
 	##################################################################################
 	##################################################################################
@@ -421,8 +484,8 @@ class AVLTree(object):
 			if abs(bf) < 2:
 				self.update(parent)
 			else:
-				criminal_son_bf = self.calculate_BF(parent.get_left()) if bf == 2 else self.calculate_BF(parent.get_right())
-				total_ops = self.rotate(parent, bf, criminal_son_bf)
+				#criminal_son_bf = self.calculate_BF(parent.get_left()) if bf == 2 else self.calculate_BF(parent.get_right())
+				total_ops = self.rotate(parent, bf)
 			parent = parent.get_parent()
 		return total_ops
 
@@ -443,8 +506,8 @@ class AVLTree(object):
 			if abs(bf) < 2:
 				self.update(parent)
 			else:
-				criminal_son_bf = self.calculate_BF(parent.get_left()) if bf == 2 else self.calculate_BF(parent.get_right())
-				total_ops += self.rotate(parent, bf, criminal_son_bf)
+				# criminal_son_bf = self.calculate_BF(parent.get_left()) if bf == 2 else self.calculate_BF(parent.get_right())
+				total_ops += self.rotate(parent, bf)
 			parent = parent.get_parent()
 		return total_ops
 
@@ -499,6 +562,18 @@ class AVLTree(object):
 	"""
 
 	def join(self, tree, key, val):
+		if self.get_root().get_height() > tree.get_root().get_height():
+			if self.get_root().get_key() > tree.get_root().get_key(): # self is bigger and taller
+				self.join_to_left(tree, key, val)
+			else:
+				self.join_to_right(tree, key, val)
+		else:
+			if self.get_root().get_key() > tree.get_root().get_key(): # self is bigger and taller
+				tree.join_to_right(self, key, val)
+			else:
+				tree.join_to_left(self, key, val)
+			self.root = tree.get_root()
+
 		return None
 
 	"""compute the rank of node in the self

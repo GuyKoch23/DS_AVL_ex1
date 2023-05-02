@@ -286,24 +286,45 @@ def test_avl_to_list_bt():
 
 def test_rank():
     tree = build_tree([15, 8, 22, 4, 11, 20, 24, 2, 9, 12, 18, 13])
-    assert(tree.rank(tree.get_root().get_left().get_left().get_left()) == 1)
-    assert(tree.rank(tree.get_root()) == 8)
-    assert(tree.rank(tree.get_root().get_left().get_right()) == 5)
+    assert (tree.rank(tree.get_root().get_left().get_left().get_left()) == 1)
+    assert (tree.rank(tree.get_root()) == 8)
+    assert (tree.rank(tree.get_root().get_left().get_right()) == 5)
 
 def test_select():
     tree = build_tree([15, 8, 22, 4, 11, 20, 24, 2, 9, 12, 18, 13])
-    assert(tree.select(6).get_key() == 12)
-    assert(tree.select(10).get_key() == 20)
-    assert(tree.select(1).get_key() == 2)
-    assert(tree.select(12).get_key() == 24)
+    assert (tree.select(6).get_key() == 12)
+    assert (tree.select(10).get_key() == 20)
+    assert (tree.select(1).get_key() == 2)
+    assert (tree.select(12).get_key() == 24)
 
 def test_select_tree_size1():
     tree = build_tree([15])
-    assert(tree.select(1).get_key() == 15)
+    assert (tree.select(1).get_key() == 15)
 
 def test_size_emptytree():
     tree = build_tree([])
-    assert(tree.size() == 0)
+    assert (tree.size() == 0)
+
+
+def test_join_12_4_connect_3():
+    tree1 = build_tree([1,2])
+    tree2 = build_tree([4])
+    tree1.join(tree2, 3, 3)
+    assert (tree1.get_root().get_size() == 4)
+    assert (tree1.get_root().get_key() == 3)
+    assert (tree1.get_root().get_left().get_right().get_key() == 2)
+    assert (tree1.get_root().get_height() == 2)
+
+def test_join_123_86957_connect_4():
+    tree1 = build_tree([1,2,3])
+    tree2 = build_tree([8,6,9,5,7])
+    tree1.join(tree2, 4, 4)
+    assert (tree1.get_root().get_size() == 9)
+    assert (tree1.get_root().get_key() == 4)
+    assert (tree1.get_root().get_height() == 3)
+    assert (tree1.get_root().get_right().get_key() == 8)
+    assert (tree1.get_root().get_left().get_key() == 2)
+
 
 #############################################################################
 
