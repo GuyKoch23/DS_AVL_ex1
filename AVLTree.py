@@ -237,19 +237,6 @@ class AVLTree(object):
 		else:
 			sub_tree_root_parent.set_right(node_to_insert)
 
-		# fixing the height of the relevant nodes going up again
-		# need to fix height only when the parent has one child after insertion
-		# id the new node has a brother then it doesn't change heights.
-		# if not (node_to_insert.get_parent().get_left().is_real_node() and node_to_insert.get_parent().get_right().is_real_node()):
-		# 	node = node_to_insert.get_parent()
-		# 	tmpHeight = node.get_height()
-		# 	while node != None:
-		# 		if node.get_height() >= tmpHeight + 1:
-		# 			return node_to_insert
-		# 		node.set_height(node.get_height() + 1)
-		# 		tmpHeight = node.get_height()
-		# 		node = node.get_parent()
-
 		return node_to_insert
 
 	def delete_leaf(self, node):
@@ -300,8 +287,6 @@ class AVLTree(object):
 	# Regular bst delete. Doesn't consider AVL stuff
 	# Updates size and height.
 	def delete_node_bst(self, node):
-		parent1 = node.get_parent()
-		parent2 = node.get_parent()
 		# If node is leaf
 		if node.get_left().get_key() is None and node.get_right().get_key() is None:
 			self.delete_leaf(node)
@@ -314,20 +299,6 @@ class AVLTree(object):
 			self.delete_one_child(y)
 			node.set_key(y.get_key())
 			node.set_value(y.get_value())
-
-		# while parent1 is not None:
-		# 	# decrease size
-		# 	parent1.set_size(parent1.get_size() - 1)
-		# 	parent1 = parent1.get_parent()
-
-		# # if the deleted node was only child, need to check height diffrences
-		# if parent2.get_left().get_key() is None and parent2.get_right().get_key() is None:
-		# 	while parent2 is not None:
-		# 		if parent2.get_height() == max(parent2.get_left().get_height(), parent2.get_left().get_height()) + 1:
-		# 			return
-		# 		parent2.set_height(parent2.get_height() - 1)
-		# 		parent2 = parent2.get_parent()
-
 		return
 
 	# returns the BF of a given node in the AVLTree
@@ -336,7 +307,7 @@ class AVLTree(object):
 			return 0
 		elif node.get_left().get_key() == None:
 			return ((1 + node.get_right().get_height()) * (-1))
-		elif node.right.key == None:
+		elif node.get_right().get_key() == None:
 			return node.get_left().get_height() + 1
 		else:
 			return node.get_left().get_height() - node.get_right().get_height()
@@ -390,16 +361,6 @@ class AVLTree(object):
 		self.update(node)
 		self.update(y)
 
-		# node.set_size(1 + node.get_left().get_size() + node.get_right().get_size())
-		# y.set_size(1 + y.get_left().get_size() + y.get_right().get_size())
-
-		# node.set_height(1 + max(node.left.get_height(), node.right.get_height()))
-		# # y.set_height(1 + max(y.left.get_height(), y.right.get_height()))
-
-		# while y != None:
-		# 	y.set_height(1 + max(y.left.get_height(), y.right.get_height()))
-		# 	y = y.get_parent()
-
 	def left_rotation(self, node):
 		y = node.get_right()  # 7
 		if node.get_parent() != None:
@@ -419,15 +380,6 @@ class AVLTree(object):
 
 		self.update(node)
 		self.update(y)
-
-		# node.set_size(1 + node.get_left().get_size() + node.get_right().get_size())
-		# y.set_size(1 + y.get_left().get_size() + y.get_right().get_size())
-
-		# node.set_height(1 + max(node.left.get_height(), node.right.get_height()))
-
-		# while y != None:
-		# 	y.set_height(1 + max(y.left.get_height(), y.right.get_height()))
-		# 	y = y.get_parent()
 			
 	def inorder_rec(self, node, avl_list):
 		if node != None and node.get_key() != None:
@@ -462,24 +414,16 @@ class AVLTree(object):
 	def insert(self, key, val):
 		created_node = self.insert_node_bst(key, val)
 		# x = created_node
-		y = created_node.get_parent()
+		parent = created_node.get_parent()
 		total_ops = 0
-		while y != None:
-			bf = self.calculate_BF(y)
-			# if abs(bf) < 2 and not self.is_height_changed(y, x.key):
-			# 	self.update(y)
-			# 	y = y.get_parent()
-			# elif abs(bf) < 2 and self.is_height_changed(y, x.key):
-			# 	self.update(y)
-			# 	y = y.get_parent()
-			# 	x = x.get_parent()
+		while parent != None:
+			bf = self.calculate_BF(parent)
 			if abs(bf) < 2:
-				self.update(y)
-				y = y.get_parent()				
+				self.update(parent)
 			else:
-				criminal_son_bf = self.calculate_BF(y.get_left()) if bf == 2 else self.calculate_BF(y.get_right())
-				total_ops = self.rotate(y, bf, criminal_son_bf)
-				y = y.get_parent()
+				criminal_son_bf = self.calculate_BF(parent.get_left()) if bf == 2 else self.calculate_BF(parent.get_right())
+				total_ops = self.rotate(parent, bf, criminal_son_bf)
+			parent = parent.get_parent()
 		return total_ops
 
 	"""deletes node from the dictionary
@@ -491,23 +435,17 @@ class AVLTree(object):
 	"""
 
 	def delete(self, node):
-		y = node.get_parent()
+		parent = node.get_parent()
 		self.delete_node_bst(node)
 		total_ops = 0
-		while y is not None:
-			bf = self.calculate_BF(y)
-			# if abs(bf) < 2 and not self.is_height_changed_after_delete(y, node):
-			# 	self.update(y)
-			# 	return 0
-			# elif abs(bf) < 2 and self.is_height_changed_after_delete(y, node):
-			# 	self.update(y)
-			# 	y = y.get_parent()
+		while parent is not None:
+			bf = self.calculate_BF(parent)
 			if abs(bf) < 2:
-				self.update(y)
+				self.update(parent)
 			else:
-				criminal_son_bf = self.calculate_BF(y.get_left()) if bf == 2 else self.calculate_BF(y.get_right())
-				total_ops += self.rotate(y, bf, criminal_son_bf)
-			y = y.get_parent()
+				criminal_son_bf = self.calculate_BF(parent.get_left()) if bf == 2 else self.calculate_BF(parent.get_right())
+				total_ops += self.rotate(parent, bf, criminal_son_bf)
+			parent = parent.get_parent()
 		return total_ops
 
 	"""returns an array representing dictionary 
@@ -528,6 +466,8 @@ class AVLTree(object):
 	"""
 
 	def size(self):
+		if self.get_root() == None:
+			return 0
 		return self.get_root().get_size()
 
 	"""splits the dictionary at a given node

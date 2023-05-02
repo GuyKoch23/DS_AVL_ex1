@@ -301,6 +301,10 @@ def test_select_tree_size1():
     tree = build_tree([15])
     assert(tree.select(1).get_key() == 15)
 
+def test_size_emptytree():
+    tree = build_tree([])
+    assert(tree.size() == 0)
+
 #############################################################################
 
 def main():
