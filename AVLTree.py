@@ -165,6 +165,14 @@ class AVLNode(object):
 
 	def is_real_node(self):
 		return self.key != None
+	
+	def convert_node_to_real(self):
+		node_left = AVLNode(None, None)
+		node_right = AVLNode(None, None)
+		self.set_height(0)
+		self.set_size(1)
+		self.set_left(node_left)  # virtual node
+		self.set_right(node_right)  # virtual node
 
 
 """
@@ -401,63 +409,106 @@ class AVLTree(object):
 
 
 	def join_to_left(self, tree, key, val):
+		height_diff = 0
 		connector = AVLNode(key, val)
-		connector_left = AVLNode(None, None)
-		connector_right = AVLNode(None, None)
-		connector = AVLNode(key, val)
-		connector.set_height(0)
-		connector.set_size(1)
-		connector.set_left(connector_left)  # virtual node
-		connector.set_right(connector_right)  # virtual node
+		connector.convert_node_to_real()
 		node = self.get_root()
 		while(node.get_height() > tree.get_root().get_height()):
 			node = node.get_left()
+			height_diff += 1
 		parent = node.get_parent()
 		connector.set_right(node)
 		connector.set_left(tree.get_root())
 		node.set_parent(connector)
 		tree.get_root().set_parent(connector)
 		connector.set_parent(parent)
-		parent.set_left(connector)
-		self.update(connector)
+		if parent is not None:
+			parent.set_left(connector)
+		temp = connector
+		temp_son = None
+		while temp is not None:
+			self.update(temp)
+			temp_son = temp
+			temp = temp.get_parent()
+		self.root = temp_son
 
 		# Rotating to balanced AVL tree
+		# node = connector
+		# while node != None:
+		# 	bf = self.calculate_BF(node)
+		# 	if abs(bf) >= 2:
+		# 		self.rotate(node, bf)
+		# 	node = node.get_parent()
 		node = connector
+		temp = None
 		while node != None:
 			bf = self.calculate_BF(node)
 			if abs(bf) >= 2:
 				self.rotate(node, bf)
+			else:
+				self.update(node)
+			temp = node
 			node = node.get_parent()
+		self.root = temp
+		return height_diff + 1
 		
 	
 	def join_to_right(self, tree, key, val):
+		height_diff = 0
 		connector = AVLNode(key, val)
-		connector_left = AVLNode(None, None)
-		connector_right = AVLNode(None, None)
-		connector = AVLNode(key, val)
-		connector.set_height(0)
-		connector.set_size(1)
-		connector.set_left(connector_left)  # virtual node
-		connector.set_right(connector_right)  # virtual node
+		connector.convert_node_to_real()
 		node = self.get_root()
 		while(node.get_height() > tree.get_root().get_height()):
 			node = node.get_right()
+			height_diff += 1
 		parent = node.get_parent()
 		connector.set_right(tree.get_root())
 		connector.set_left(node)
 		tree.get_root().set_parent(connector)
 		node.set_parent(connector)
 		connector.set_parent(parent)
-		parent.set_right(connector)
-		self.update(connector)
+		if parent is not None:
+			parent.set_right(connector)
+		# temp = connector
+		# temp_son = None
+		# while temp is not None:
+		# 	self.update(temp)
+		# 	temp_son = temp
+		# 	temp = temp.get_parent()
+		# self.root = temp_son
 
 		# Rotating to balanced AVL tree
 		node = connector
+		temp = None
 		while node != None:
 			bf = self.calculate_BF(node)
 			if abs(bf) >= 2:
 				self.rotate(node, bf)
+			else:
+				self.update(node)
+			temp = node
 			node = node.get_parent()
+		self.root = temp
+
+		return height_diff + 1
+	
+	def join_tree_with_empty(self, tree, key, val):
+		connector = AVLNode(key, val)
+		connector.convert_node_to_real()
+		if connector.get_key() > tree.get_root().get_key():
+			connector.set_left(tree.get_root())
+			tree.get_root().set_parent(connector)
+		else:
+			connector.set_right(tree.get_root())
+			tree.get_root().set_parent(connector)
+		self.root = connector
+		self.update(connector)
+		bf = self.calculate_BF(connector)
+		if abs(bf) >= 2:
+			self.rotate(connector, bf)
+
+
+
 
 
 	##################################################################################
@@ -545,7 +596,29 @@ class AVLTree(object):
 	"""
 
 	def split(self, node):
-		return None
+		smaller_tree = AVLTree()
+		if node.get_left().is_real_node():
+			smaller_tree.root = node.get_left()
+			smaller_tree.root.set_parent(None)
+		bigger_tree = AVLTree()
+		if node.get_right().is_real_node():
+			bigger_tree.root = node.get_right()
+			bigger_tree.root.set_parent(None)
+		
+		while node.get_parent() is not None:
+			if node.get_key() > node.get_parent().get_key():
+				node = node.get_parent()
+				left_tree = AVLTree()
+				left_tree.root = node.get_left()
+				left_tree.root.set_parent(None)
+				height_diff = smaller_tree.join(left_tree, node.get_key(), node.get_value())
+			else:
+				node = node.get_parent()
+				right_tree = AVLTree()
+				right_tree.root = node.get_right()
+				right_tree.root.set_parent(None)
+				height_diff = bigger_tree.join(right_tree, node.get_key(), node.get_value())
+		return [smaller_tree, bigger_tree]
 
 	"""joins self with key and another AVLTree
 
@@ -562,19 +635,26 @@ class AVLTree(object):
 	"""
 
 	def join(self, tree, key, val):
+		if self.get_root() is None and tree.get_root() is None:
+			return 1
+		if tree.get_root() is None:
+			return self.get_root().get_height()
+		if self.get_root() is None:
+			self.join_tree_with_empty(tree, key, val)
+			return self.get_root().get_height() + 1
 		if self.get_root().get_height() > tree.get_root().get_height():
 			if self.get_root().get_key() > tree.get_root().get_key(): # self is bigger and taller
-				self.join_to_left(tree, key, val)
+				height_diff = self.join_to_left(tree, key, val)
 			else:
-				self.join_to_right(tree, key, val)
+				height_diff = self.join_to_right(tree, key, val)
 		else:
 			if self.get_root().get_key() > tree.get_root().get_key(): # self is bigger and taller
-				tree.join_to_right(self, key, val)
+				height_diff = tree.join_to_right(self, key, val)
 			else:
-				tree.join_to_left(self, key, val)
+				height_diff = tree.join_to_left(self, key, val)
 			self.root = tree.get_root()
 
-		return None
+		return height_diff
 
 	"""compute the rank of node in the self
 
