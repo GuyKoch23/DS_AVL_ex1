@@ -272,12 +272,17 @@ class AVLTree(object):
 		return
 
 	def get_successor(self, node):
-		if node.get_right().get_key() is None:
-			return None
-		y = node.get_right()
-		while y.get_left().get_key() is not None:
-			y = y.get_left()
+		if node.get_right().get_key() is not None:
+			y = node.get_right()
+			while y.get_left().get_key() is not None:
+				y = y.get_left()
+			return y
+		y = node.get_parent()
+		while y is not None and node == y.get_right():
+			node = y
+			y = node.get_parent()
 		return y
+
 
 	# called after deletion
 	def is_height_changed_after_delete(self, node, child):
