@@ -311,13 +311,6 @@ class AVLTree(object):
 		else:
 			return node.get_left().get_height() - node.get_right().get_height()
 
-	# called after insertion and before a rotation, deretmines if the height of a given node has changed
-	def is_height_changed(self, node, son_val):
-		if node.get_key() < son_val:  # came from right
-			return node.get_right().get_height() >= 1 + node.get_left().get_height()
-		else:  # came from left
-			return node.get_left().get_height() >= 1 + node.get_right().get_height()
-
 	def update(self, node):
 		node.set_size(1 + node.get_left().get_size() + node.get_right().get_size())
 		node.set_height(1 + max(node.left.get_height(), node.right.get_height()))
