@@ -283,16 +283,6 @@ class AVLTree(object):
 			y = node.get_parent()
 		return y
 
-
-	# called after deletion
-	def is_height_changed_after_delete(self, node, child):
-		# deletion came from right
-		if node.get_key() < child.get_key():
-			return node.get_left().get_height() < 1 + node.get_right().get_height()
-		# came from left
-		else:
-			return node.get_right().get_height() < 1 + node.get_left().get_height()
-
 	# Regular bst delete. Doesn't consider AVL stuff
 	# Updates size and height.
 	def delete_node_bst(self, node):
