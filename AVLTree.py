@@ -169,6 +169,8 @@ class AVLNode(object):
 	def convert_node_to_real(self):
 		node_left = AVLNode(None, None)
 		node_right = AVLNode(None, None)
+		node_left.set_parent(self)
+		node_right.set_parent(self)
 		self.set_height(0)
 		self.set_size(1)
 		self.set_left(node_left)  # virtual node
@@ -217,13 +219,9 @@ class AVLTree(object):
 	def insert_node_bst(self, key, val):
 		sub_tree_root_parent = None
 		sub_tree_root = self.root
-		node_to_insert_left = AVLNode(None, None)
-		node_to_insert_right = AVLNode(None, None)
 		node_to_insert = AVLNode(key, val)
-		node_to_insert.set_height(0)
-		node_to_insert.set_size(1)
-		node_to_insert.set_left(node_to_insert_left)  # virtual node
-		node_to_insert.set_right(node_to_insert_right)  # virtual node
+		node_to_insert.convert_node_to_real()
+
 		
 		# the tree was empty
 		if sub_tree_root == None:
@@ -432,13 +430,6 @@ class AVLTree(object):
 			temp = temp.get_parent()
 		self.root = temp_son
 
-		# Rotating to balanced AVL tree
-		# node = connector
-		# while node != None:
-		# 	bf = self.calculate_BF(node)
-		# 	if abs(bf) >= 2:
-		# 		self.rotate(node, bf)
-		# 	node = node.get_parent()
 		node = connector
 		temp = None
 		while node != None:
@@ -469,13 +460,6 @@ class AVLTree(object):
 		connector.set_parent(parent)
 		if parent is not None:
 			parent.set_right(connector)
-		# temp = connector
-		# temp_son = None
-		# while temp is not None:
-		# 	self.update(temp)
-		# 	temp_son = temp
-		# 	temp = temp.get_parent()
-		# self.root = temp_son
 
 		# Rotating to balanced AVL tree
 		node = connector
@@ -491,25 +475,6 @@ class AVLTree(object):
 		self.root = temp
 
 		return height_diff + 1
-	
-	def join_tree_with_empty(self, tree, key, val):
-		connector = AVLNode(key, val)
-		connector.convert_node_to_real()
-		if connector.get_key() > tree.get_root().get_key():
-			connector.set_left(tree.get_root())
-			tree.get_root().set_parent(connector)
-		else:
-			connector.set_right(tree.get_root())
-			tree.get_root().set_parent(connector)
-		self.root = connector
-		self.update(connector)
-		bf = self.calculate_BF(connector)
-		if abs(bf) >= 2:
-			self.rotate(connector, bf)
-
-
-
-
 
 	##################################################################################
 	##################################################################################
@@ -527,7 +492,6 @@ class AVLTree(object):
 
 	def insert(self, key, val):
 		created_node = self.insert_node_bst(key, val)
-		# x = created_node
 		parent = created_node.get_parent()
 		total_ops = 0
 		while parent != None:
@@ -535,7 +499,6 @@ class AVLTree(object):
 			if abs(bf) < 2:
 				self.update(parent)
 			else:
-				#criminal_son_bf = self.calculate_BF(parent.get_left()) if bf == 2 else self.calculate_BF(parent.get_right())
 				total_ops = self.rotate(parent, bf)
 			parent = parent.get_parent()
 		return total_ops
@@ -638,19 +601,23 @@ class AVLTree(object):
 		if self.get_root() is None and tree.get_root() is None:
 			return 1
 		if tree.get_root() is None:
-			return self.get_root().get_height()
+			height = self.get_root().get_height()
+			self.insert(key, val)
+			return height +1
 		if self.get_root() is None:
-			self.join_tree_with_empty(tree, key, val)
-			return self.get_root().get_height() + 1
+			height = tree.get_root().get_height()
+			tree.insert(key, val)
+			self.root = tree.root
+			return height + 1
 		if self.get_root().get_height() > tree.get_root().get_height():
 			if self.get_root().get_key() > tree.get_root().get_key(): # self is bigger and taller
 				height_diff = self.join_to_left(tree, key, val)
-			else:
+			else: # self is taller and smaller
 				height_diff = self.join_to_right(tree, key, val)
 		else:
-			if self.get_root().get_key() > tree.get_root().get_key(): # self is bigger and taller
+			if self.get_root().get_key() > tree.get_root().get_key(): # self is bigger and shorter
 				height_diff = tree.join_to_right(self, key, val)
-			else:
+			else:# self is shorter and smaller
 				height_diff = tree.join_to_left(self, key, val)
 			self.root = tree.get_root()
 

@@ -326,7 +326,7 @@ def test_join_123_86957_connect_4():
     assert (tree1.get_root().get_left().get_key() == 2)
     assert (height_diff == 2)
 
-def test_split_428136957_by_4():
+def test_split_428136957_by_5():
     tree = build_tree([4,2,8,1,3,6,9,5,7])
     trees = tree.split(tree.get_root().get_right().get_left().get_left())
     tree1 = trees[0]
@@ -335,13 +335,13 @@ def test_split_428136957_by_4():
     assert (tree1.get_root().get_key() == 2)
     assert (tree1.get_root().get_height() == 2)
 
-    assert (tree1.get_root().get_right().get_key() == 4)
+    assert (tree1.get_root().get_right().get_key() == 3)
     assert (tree1.get_root().get_left().get_key() == 1)
 
-    assert (tree2.get_root().get_key() == 8)
+    assert (tree2.get_root().get_key() == 7)
     assert (tree2.get_root().get_size() == 4)
     assert (tree2.get_root().get_left().get_key() == 6)
-    assert (tree2.get_root().get_right().get_key() == 9)
+    assert (tree2.get_root().get_right().get_key() == 8)
 
 def test_split_428136957_by_6():
     tree = build_tree([4,2,8,1,3,6,9,5,7])
