@@ -230,8 +230,6 @@ class AVLTree(object):
 
 		while sub_tree_root.get_key() != None:
 			sub_tree_root_parent = sub_tree_root
-			# Fixing the size of the nodes on the way down
-			# sub_tree_root_parent.set_size(sub_tree_root_parent.get_size() + 1)
 			if node_to_insert.get_key() < sub_tree_root.get_key():
 				sub_tree_root = sub_tree_root.get_left()
 			else:
