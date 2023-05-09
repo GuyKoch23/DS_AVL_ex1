@@ -378,6 +378,20 @@ def test_split_428136957_by_2():
     assert (tree2.get_root().get_size() == 7)
 
 
+def test_insert_node_bst_from_max_42759_insert_3():
+    vals = [4,2,7,5,9]
+    tree = build_tree(vals)
+    tree.max = tree.root.get_right().get_right()
+    steps_count, bigger_count, created_node = tree.insert_node_bst_from_max(3,3)
+    
+    assert (steps_count == 4)
+    assert (bigger_count == 4)
+    assert (tree.root.get_left().get_right().get_key() == 3)
+    
+
+
+
+
 #############################################################################
 
 def main():

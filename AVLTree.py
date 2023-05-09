@@ -4,6 +4,8 @@
 # id2      - 318962909
 # name2    - guy koch
 
+from random import shuffle
+
 """A class represnting a node in an AVL tree"""
 
 
@@ -192,6 +194,7 @@ class AVLTree(object):
 		self.root = None
 
 	# add your fields here
+		self.max = None
 
 	"""searches for a value in the dictionary corresponding to the key
 
@@ -242,6 +245,7 @@ class AVLTree(object):
 			sub_tree_root_parent.set_right(node_to_insert)
 
 		return node_to_insert
+		
 
 	def delete_leaf(self, node):
 		x = node.get_parent()
@@ -648,3 +652,101 @@ class AVLTree(object):
 
 	def get_root(self):
 		return self.root
+	
+	####################### part 2 - experimental ########################
+
+	def insert_node_bst_from_max(self, key, val):
+		
+		node_to_insert = AVLNode(key, val)
+		node_to_insert.convert_node_to_real()
+		
+		# the tree was empty
+		if self.root == None:
+			self.root = node_to_insert
+			self.max = node_to_insert
+			return (1, 0, node_to_insert)
+
+		steps_count = 0
+		biggers_count = 0
+		parent = None
+		node = self.max
+
+		while node.get_parent() is not None and node.get_parent().get_key() > key:
+			node = node.get_parent()
+			steps_count += 1
+
+		while node.get_key() != None:
+			parent = node
+			if node_to_insert.get_key() < node.get_key():
+				biggers_count += node.get_right().get_size() + 1
+				steps_count += 1
+				node = node.get_left()
+			else:
+				node = node.get_right()
+		node_to_insert.set_parent(parent)
+
+		if node_to_insert.get_key() < parent.get_key():
+			parent.set_left(node_to_insert)
+		else:
+			parent.set_right(node_to_insert)
+		steps_count += 1 # counting the last step when creating the new node
+
+
+		if key > self.max.get_key():
+			self.max = node_to_insert
+
+		return (steps_count, biggers_count, node_to_insert)
+
+	def insert_from_max(self, key, val):
+		steps_count, biggers_count, created_node = self.insert_node_bst_from_max(key, val)
+		parent = created_node.get_parent()
+		total_ops = 0
+		while parent != None:
+			bf = self.calculate_BF(parent)
+			if abs(bf) < 2:
+				self.update(parent)
+			else:
+				total_ops = self.rotate(parent, bf)
+			parent = parent.get_parent()
+		total_price = total_ops + steps_count
+		switch_count = biggers_count
+		return (total_price, switch_count)
+	
+def arrays_generator():
+	ordereds_arr = []
+	randoms_arr = []
+	for i in range(1,6):
+		arr_ordered = []
+		arr_shuffle = []
+		for j in range(1500*(2**i),0,-1):
+			arr_ordered.append(j)
+			arr_shuffle.append(j)
+		ordereds_arr.append(arr_ordered)
+		shuffle(arr_shuffle)
+		randoms_arr.append(arr_shuffle)
+	return (ordereds_arr, randoms_arr)
+
+def runner():
+	ordereds_arr, randoms_arr = arrays_generator()
+	for i in range(len(ordereds_arr)):
+		total_price = 0
+		switch_count = 0
+		tree = AVLTree()
+		for key in ordereds_arr[i]:
+			x, y = tree.insert_from_max(key, key)
+			total_price += x
+			switch_count += y
+		print({i+1}, "total_price", total_price, "switch_count", switch_count)
+	for j in range(len(randoms_arr)):
+		total_price = 0
+		switch_count = 0
+		tree2 = AVLTree()
+		for key in randoms_arr[j]:
+			x, y = tree2.insert_from_max(key, key)
+			total_price += x
+			switch_count += y
+		print({j+1}, "total_price", total_price, "switch_count", switch_count)
+
+
+runner()
+
