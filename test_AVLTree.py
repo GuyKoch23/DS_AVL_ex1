@@ -387,10 +387,6 @@ def test_insert_node_bst_from_max_42759_insert_3():
     assert (steps_count == 4)
     assert (bigger_count == 4)
     assert (tree.root.get_left().get_right().get_key() == 3)
-    
-
-
-
 
 #############################################################################
 
