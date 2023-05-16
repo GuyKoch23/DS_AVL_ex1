@@ -168,7 +168,11 @@ class AVLNode(object):
 
 	def is_real_node(self):
 		return self.key != None
-	
+
+	"""
+	Convert node from virtual to real 
+	"""
+
 	def convert_node_to_real(self):
 		node_left = AVLNode(None, None)
 		node_right = AVLNode(None, None)
@@ -194,7 +198,7 @@ class AVLTree(object):
 	def __init__(self):
 		self.root = None
 
-	# add your fields here
+		# add your fields here
 		self.max = None
 
 	"""searches for a value in the dictionary corresponding to the key
@@ -217,16 +221,15 @@ class AVLTree(object):
 		return None
 
 	##################################################################################
-	############################# Helper Method For Insert ###########################
+	############################# Helper Methods #####################################
 
 	# Creaets a node with the given key and val and inserts as usual BST
 	def insert_node_bst(self, key, val):
-		sub_tree_root_parent = self.root # changed here from None
+		sub_tree_root_parent = self.root
 		sub_tree_root = self.root
 		node_to_insert = AVLNode(key, val)
 		node_to_insert.convert_node_to_real()
 
-		
 		# the tree was empty
 		if sub_tree_root == None:
 			self.root = node_to_insert
@@ -246,8 +249,8 @@ class AVLTree(object):
 			sub_tree_root_parent.set_right(node_to_insert)
 
 		return node_to_insert
-		
 
+	# Deletes leaf from tree, should be called with node that is a leaf.
 	def delete_leaf(self, node):
 		x = node.get_parent()
 		if x.get_left() == node:
@@ -288,8 +291,7 @@ class AVLTree(object):
 			y = node.get_parent()
 		return y
 
-	# Regular bst delete. Doesn't consider AVL stuff
-	# Updates size and height.
+	# Regular bst delete
 	def delete_node_bst(self, node):
 		# If node is leaf
 		if node.get_left().get_key() is None and node.get_right().get_key() is None:
@@ -307,22 +309,25 @@ class AVLTree(object):
 
 	# returns the BF of a given node in the AVLTree
 	def calculate_BF(self, node):
-		if node.get_left().get_key() == None and node.get_right().get_key() == None:
+		if node.get_left().get_key() is None and node.get_right().get_key() is None:
 			return 0
-		elif node.get_left().get_key() == None:
-			return ((1 + node.get_right().get_height()) * (-1))
-		elif node.get_right().get_key() == None:
+		elif node.get_left().get_key() is None:
+			return (1 + node.get_right().get_height()) * (-1)
+		elif node.get_right().get_key() is None:
 			return node.get_left().get_height() + 1
 		else:
 			return node.get_left().get_height() - node.get_right().get_height()
 
+	# Updates node size and height
 	def update(self, node):
 		node.set_size(1 + node.get_left().get_size() + node.get_right().get_size())
 		node.set_height(1 + max(node.left.get_height(), node.right.get_height()))
 
+	# Receives an AVL criminal node and calls the required rotation as we learned in class.
 	def rotate(self, criminal_node, criminal_node_bf):
 
-		criminal_son_bf = self.calculate_BF(criminal_node.get_left()) if criminal_node_bf == 2 else self.calculate_BF(criminal_node.get_right())
+		criminal_son_bf = self.calculate_BF(criminal_node.get_left()) if criminal_node_bf == 2 else self.calculate_BF(
+			criminal_node.get_right())
 
 		if criminal_node_bf == 2:
 			if criminal_son_bf == 1 or criminal_son_bf == 0:  # right rotation
@@ -341,10 +346,11 @@ class AVLTree(object):
 				self.left_rotation(criminal_node)
 				return 2
 
+	# Preform right rotation by changing pointers and update the relevant nodes.
 	def right_rotation(self, node):
 		y = node.get_left()
-		if node.get_parent() != None:
-			if node.get_parent().get_key() > node.get_key():  # node is left son to parent
+		if node.get_parent() is not None:
+			if node.get_parent().get_key() > node.get_key():
 				node.get_parent().set_left(y)
 			else:
 				node.get_parent().set_right(y)
@@ -361,10 +367,11 @@ class AVLTree(object):
 		self.update(node)
 		self.update(y)
 
+	# Preform left rotation, same as right.
 	def left_rotation(self, node):
-		y = node.get_right()  # 7
-		if node.get_parent() != None:
-			if node.get_parent().get_key() > node.get_key():  # node is left son to parent
+		y = node.get_right()
+		if node.get_parent() is not None:
+			if node.get_parent().get_key() > node.get_key():
 				node.get_parent().set_left(y)
 			else:
 				node.get_parent().set_right(y)
@@ -380,13 +387,15 @@ class AVLTree(object):
 
 		self.update(node)
 		self.update(y)
-			
+
+	# Fill a list with the given node subtree inorder scan.
 	def inorder_rec(self, node, avl_list):
 		if node != None and node.get_key() != None:
 			self.inorder_rec(node.get_left(), avl_list)
 			avl_list.append((node.get_key(), node.get_value()))
 			self.inorder_rec(node.get_right(), avl_list)
 
+	# Select using recursion, as we learned in class
 	def select_rec(self, node, i):
 		r = node.get_left().get_size() + 1
 		if i == r:
@@ -394,15 +403,15 @@ class AVLTree(object):
 		elif i < r:
 			return self.select_rec(node.get_left(), i)
 		else:
-			return self.select_rec(node.get_right(), i-r)
+			return self.select_rec(node.get_right(), i - r)
 
-
+	# Joins tree to self from left side, this means that self is bigger than tree and that self.keys>key>tree.keys
 	def join_to_left(self, tree, key, val):
 		height_diff = 0
 		connector = AVLNode(key, val)
 		connector.convert_node_to_real()
 		node = self.get_root()
-		while(node.get_height() > tree.get_root().get_height()):
+		while (node.get_height() > tree.get_root().get_height()):
 			node = node.get_left()
 			height_diff += 1
 		parent = node.get_parent()
@@ -413,17 +422,18 @@ class AVLTree(object):
 		connector.set_parent(parent)
 		if parent is not None:
 			parent.set_left(connector)
-		temp = connector
-		temp_son = None
-		while temp is not None:
-			self.update(temp)
-			temp_son = temp
-			temp = temp.get_parent()
-		self.root = temp_son
+		# temp = connector
+		# temp_son = None
+		# while temp is not None:
+		# 	self.update(temp)
+		# 	temp_son = temp
+		# 	temp = temp.get_parent()
+		# self.root = temp_son
 
+		# Rotating to balanced AVL tree
 		node = connector
 		temp = None
-		while node != None:
+		while node is not None:
 			bf = self.calculate_BF(node)
 			if abs(bf) >= 2:
 				self.rotate(node, bf)
@@ -433,14 +443,13 @@ class AVLTree(object):
 			node = node.get_parent()
 		self.root = temp
 		return height_diff + 1
-		
-	
+
 	def join_to_right(self, tree, key, val):
 		height_diff = 0
 		connector = AVLNode(key, val)
 		connector.convert_node_to_real()
 		node = self.get_root()
-		while(node.get_height() > tree.get_root().get_height()):
+		while node.get_height() > tree.get_root().get_height():
 			node = node.get_right()
 			height_diff += 1
 		parent = node.get_parent()
@@ -455,7 +464,7 @@ class AVLTree(object):
 		# Rotating to balanced AVL tree
 		node = connector
 		temp = None
-		while node != None:
+		while node is not None:
 			bf = self.calculate_BF(node)
 			if abs(bf) >= 2:
 				self.rotate(node, bf)
@@ -485,7 +494,7 @@ class AVLTree(object):
 		created_node = self.insert_node_bst(key, val)
 		parent = created_node.get_parent()
 		total_ops = 0
-		while parent != None:
+		while parent is not None:
 			bf = self.calculate_BF(parent)
 			if abs(bf) < 2:
 				self.update(parent)
@@ -511,7 +520,6 @@ class AVLTree(object):
 			if abs(bf) < 2:
 				self.update(parent)
 			else:
-				# criminal_son_bf = self.calculate_BF(parent.get_left()) if bf == 2 else self.calculate_BF(parent.get_right())
 				total_ops += self.rotate(parent, bf)
 			parent = parent.get_parent()
 		return total_ops
@@ -534,7 +542,7 @@ class AVLTree(object):
 	"""
 
 	def size(self):
-		if self.get_root() == None:
+		if self.get_root() is None:
 			return 0
 		return self.get_root().get_size()
 
@@ -558,7 +566,7 @@ class AVLTree(object):
 		if node.get_right().is_real_node():
 			bigger_tree.root = node.get_right()
 			bigger_tree.root.set_parent(None)
-		
+
 		while node.get_parent() is not None:
 			if node.get_key() > node.get_parent().get_key():
 				node = node.get_parent()
@@ -600,21 +608,21 @@ class AVLTree(object):
 		if tree.get_root() is None:
 			height = self.get_root().get_height()
 			self.insert(key, val)
-			return height +1
+			return height + 1
 		if self.get_root() is None:
 			height = tree.get_root().get_height()
 			tree.insert(key, val)
 			self.root = tree.root
 			return height + 1
 		if self.get_root().get_height() > tree.get_root().get_height():
-			if self.get_root().get_key() > tree.get_root().get_key(): # self is bigger and taller
+			if self.get_root().get_key() > tree.get_root().get_key():  # self is bigger and taller
 				height_diff = self.join_to_left(tree, key, val)
-			else: # self is taller and smaller
+			else:  # self is taller and smaller
 				height_diff = self.join_to_right(tree, key, val)
 		else:
-			if self.get_root().get_key() > tree.get_root().get_key(): # self is bigger and shorter
+			if self.get_root().get_key() > tree.get_root().get_key():  # self is bigger and shorter
 				height_diff = tree.join_to_right(self, key, val)
-			else:# self is shorter and smaller
+			else:  # self is shorter and smaller
 				height_diff = tree.join_to_left(self, key, val)
 			self.root = tree.get_root()
 
@@ -659,14 +667,14 @@ class AVLTree(object):
 
 	def get_root(self):
 		return self.root
-	
+
 	####################### part 2 - experimental ########################
 
 	def insert_node_bst_from_max(self, key, val):
-		
+
 		node_to_insert = AVLNode(key, val)
 		node_to_insert.convert_node_to_real()
-		
+
 		# the tree was empty
 		if self.root == None:
 			self.root = node_to_insert
@@ -696,8 +704,7 @@ class AVLTree(object):
 			parent.set_left(node_to_insert)
 		else:
 			parent.set_right(node_to_insert)
-		steps_count += 1 # counting the last step when creating the new node
-
+		steps_count += 1  # counting the last step when creating the new node
 
 		if key > self.max.get_key():
 			self.max = node_to_insert
@@ -718,7 +725,7 @@ class AVLTree(object):
 		total_price = total_ops + steps_count
 		switch_count = biggers_count
 		return (total_price, switch_count)
-	
+
 	def split_for_test(self, node):
 		total_work_counter = 0
 		joins_counter = 0
@@ -731,7 +738,7 @@ class AVLTree(object):
 		if node.get_right().is_real_node():
 			bigger_tree.root = node.get_right()
 			bigger_tree.root.set_parent(None)
-		
+
 		while node.get_parent() is not None:
 			joins_counter += 1
 			if node.get_key() > node.get_parent().get_key():
@@ -756,7 +763,7 @@ class AVLTree(object):
 			if height_diff > max_join:
 				max_join = height_diff
 		work_avg = total_work_counter / joins_counter
-		return ([smaller_tree, bigger_tree], max_join, work_avg)  
+		return ([smaller_tree, bigger_tree], max_join, work_avg)
 
 	"""joins self with key and another AVLTree
 
@@ -778,37 +785,34 @@ class AVLTree(object):
 		if tree.get_root() is None:
 			height = self.get_root().get_height()
 			self.insert(key, val)
-			return height +1
+			return height + 1
 		if self.get_root() is None:
 			height = tree.get_root().get_height()
 			tree.insert(key, val)
 			self.root = tree.root
 			return height + 1
 		if self.get_root().get_height() > tree.get_root().get_height():
-			if self.get_root().get_key() > tree.get_root().get_key(): # self is bigger and taller
+			if self.get_root().get_key() > tree.get_root().get_key():  # self is bigger and taller
 				height_diff = self.join_to_left(tree, key, val)
-			else: # self is taller and smaller
+			else:  # self is taller and smaller
 				height_diff = self.join_to_right(tree, key, val)
 		else:
-			if self.get_root().get_key() > tree.get_root().get_key(): # self is bigger and shorter
+			if self.get_root().get_key() > tree.get_root().get_key():  # self is bigger and shorter
 				height_diff = tree.join_to_right(self, key, val)
-			else:# self is shorter and smaller
+			else:  # self is shorter and smaller
 				height_diff = tree.join_to_left(self, key, val)
 			self.root = tree.get_root()
 
 		return height_diff
 
 
-
-
-	
 def arrays_generator():
 	ordereds_arr = []
 	randoms_arr = []
-	for i in range(1,6):
+	for i in range(1, 6):
 		arr_ordered = []
 		arr_shuffle = []
-		for j in range(1500*(2**i),0,-1):
+		for j in range(1500 * (2 ** i), 0, -1):
 			arr_ordered.append(j)
 			arr_shuffle.append(j)
 		ordereds_arr.append(arr_ordered)
@@ -819,18 +823,17 @@ def arrays_generator():
 
 def almost_ordered_array_generator():
 	almost_ordereds_arr = []
-	for i in range(1,6):
+	for i in range(1, 6):
 		arr = []
-		for j in range((1500*(2**i))//300):
-			for t in range(300,0,-1):
-				arr.append((300*(j)+t))
+		for j in range((1500 * (2 ** i)) // 300):
+			for t in range(300, 0, -1):
+				arr.append((300 * (j) + t))
 		almost_ordereds_arr.append(arr)
 	return almost_ordereds_arr
 
 
-
 def insert_runner():
-	#ordereds_arr, randoms_arr = arrays_generator()
+	# ordereds_arr, randoms_arr = arrays_generator()
 	almost_ordered = almost_ordered_array_generator()
 	# for i in range(len(ordereds_arr)):
 	# 	total_price = 0
@@ -858,13 +861,14 @@ def insert_runner():
 			x, y = tree2.insert_from_max(key, key)
 			total_price += x
 			switch_count += y
-		print({j+1}, "total_price", total_price, "switch_count", switch_count)
+		print({j + 1}, "total_price", total_price, "switch_count", switch_count)
+
 
 def array_generator_split():
 	arrays = []
 	for i in range(10):
 		arr = []
-		for j in range(1500*(2**(1+i)), 0, -1):
+		for j in range(1500 * (2 ** (1 + i)), 0, -1):
 			arr.append(j)
 		shuffle(arr)
 		arrays.append(arr)
@@ -876,6 +880,7 @@ def array_generator_split():
 		arrays2.append(arr)
 	return (arrays, arrays2)
 
+
 def find_max_left(tree):
 	node = tree.root
 	node = node.get_left()
@@ -884,7 +889,7 @@ def find_max_left(tree):
 	return node
 
 
-def split_runner(): # change to join/split_for_test
+def split_runner():  # change to join/split_for_test
 	array1, arrray2 = array_generator_split()
 	# for i in range(10):
 	# 	tree = AVLTree()
@@ -897,19 +902,19 @@ def split_runner(): # change to join/split_for_test
 	for i in range(10):
 		tree = AVLTree()
 		for j in range(len(arrray2[i])):
-			tree.insert(arrray2[i][j],arrray2[i][j])
-		rnd = random.randint(1, 1500*(2**(1+i)))
+			tree.insert(arrray2[i][j], arrray2[i][j])
+		rnd = random.randint(1, 1500 * (2 ** (1 + i)))
 		node = find_max_left(tree)
 		[smaller_tree, bigger_tree], max_join, work_avg = tree.split_for_test(node)
 		print(i, "max_join", max_join, "work_avg", work_avg)
-	
-	
-	# tree = AVLTree()
-	# for j in range(len(arrray2[2])):
-	# 	tree.insert(arrray2[9][j],arrray2[2][j])
-	# rnd = random.randint(1, 1500*(2**(2)))
-	# node = find_max_left(tree)
-	# [smaller_tree, bigger_tree], max_join, work_avg = tree.split_for_test(node)
-	# print(2, "max_join", max_join, "work_avg", work_avg)
+
+
+# tree = AVLTree()
+# for j in range(len(arrray2[2])):
+# 	tree.insert(arrray2[9][j],arrray2[2][j])
+# rnd = random.randint(1, 1500*(2**(2)))
+# node = find_max_left(tree)
+# [smaller_tree, bigger_tree], max_join, work_avg = tree.split_for_test(node)
+# print(2, "max_join", max_join, "work_avg", work_avg)
 
 split_runner()
